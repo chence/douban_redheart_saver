@@ -1,0 +1,17 @@
+{
+  "name": "douban_redheart_saver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "douban_readheart_saver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "chence",
+  "license": "WTFPL",
+  "dependencies": {
+    "bluebird": "3.7.2",
+    "chrome-cookies-secure": "1.3.2",
+    "lodash": "4.17.21",
+    "shelljs": "0.8.4"
+  }
+}
