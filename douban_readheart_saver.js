@@ -6,11 +6,11 @@ const shell = require('shelljs');
 
 const _get_douban_cookie = () => {
     const cookie = ""; // 可以自己去浏览器复制一个cookie
-    const uri = "https://fm.douban.com/mine/hearts";
     return new Promise((resolve, reject) => {
         if(cookie) {
             resolve(cookie);
         } else {
+            const uri = "https://fm.douban.com/mine/hearts";
             chrome_cookies.getCookies(uri, "header", (err, cookies) =>{
                 if(err) {
                     reject(err);
@@ -23,10 +23,18 @@ const _get_douban_cookie = () => {
 }
 
 const _exec_cmd = (cmd, options={}) => {
-    return shell.exec(cmd, Object.assign({}, {
-        async: false,
-        silent: true
-    }, options));
+    return new Promise((resolve, reject) => {
+        shell.exec(cmd, Object.assign({}, {
+            async: true,
+            silent: true
+        }, options), (code, stdout, stderr) => {
+            if (code === 0) {
+                resolve(stdout);
+            } else {
+                reject(stderr);
+            }
+        });
+    });
 }
 
 const get_basic = async () => {
@@ -87,14 +95,24 @@ const main = async () => {
     const chunk_size = 20;
     const ids = basic.songs.map(s => s.sid);
 
+    let cmds = [];
+    let count = 0;
     await Promise.each(_.chunk(ids, chunk_size), async (chunk_items, index) => {
         const result = await get_songs(chunk_items);
         const items = JSON.parse(result);
+
         items.forEach(i => {
-            console.log(`wget "${i.url}" -O "${i.artist}-${i.title}.${i.file_ext}"`);
+            const cmd = `wget "${i.url}" -O "./download/${_.padStart(++count, 4, 0)}-${i.artist}-${i.title.replace(/"/g, "\\\"").replace(/`/g, "\\\`").replace(/\//g, "\\\/")}.${i.file_ext}"`;
+            console.log(cmd);
+            cmds.push(cmds);
         });
-        await Promise.delay(100);
     });
+
+    // await Promise.map(cmds, async cmd => {
+    //     console.log(cmd);
+    //     return _exec_cmd(cmd);
+    // }, {concurrency: 50});
+
 }
 
 ;(async() => {
