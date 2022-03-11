@@ -40,7 +40,7 @@ const _exec_cmd = (cmd, options={}) => {
 const get_basic = async () => {
     const cookie = await _get_douban_cookie();
     const cmd = `
-        curl 'https://fm.douban.com/j/v2/redheart/basic?updated_time=2021-09-13+11%3A14%3A19' \
+        curl 'https://fm.douban.com/j/v2/redheart/basic' \
           -H 'Connection: keep-alive' \
           -H 'Pragma: no-cache' \
           -H 'Cache-Control: no-cache' \
@@ -83,7 +83,7 @@ const get_songs = async (ids) => {
           -H 'Referer: https://fm.douban.com/mine/hearts' \
           -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8' \
           -H 'Cookie: ${cookie}'  \
-          --data-raw 'sids=${ ids.join("%7C") }&kbps=128&ck=GG2l' \
+          --data-raw 'sids=${ ids.join("%7C") }&kbps=192&ck=0PXE' \
           --compressed
     `;
     return _exec_cmd(cmd);
@@ -106,6 +106,7 @@ const main = async () => {
             console.log(cmd);
             cmds.push(cmds);
         });
+        await Promise.delay(_.random(1000,5000));
     });
 
     // await Promise.map(cmds, async cmd => {
